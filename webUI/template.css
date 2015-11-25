@@ -1,0 +1,133 @@
+body {
+  margin: 0;
+  background-color: rgb(252, 248, 227);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+}
+
+small {
+  font-weight: normal;
+  line-height: 1;
+  color: #777;
+  font-size: 80%;
+}
+
+h1 {
+  color: #8a6d3b;
+}
+
+h3 {
+  color: #31708f;
+}
+
+a {
+  background-color: transparent;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+
+.wrapper {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.card {
+  display: block;
+  width: 30%;
+  float: left;
+  padding: 4px;
+  margin-bottom: 20px;
+  line-height: 1.42857143;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  -webkit-transition: border .2s ease-in-out;
+       -o-transition: border .2s ease-in-out;
+          transition: border .2s ease-in-out;
+  margin-left: 10px;
+  text-align: center;
+  position: relative;
+}
+.card > img,
+.card a > img {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 99%;
+  max-height: 250px;
+}
+a.card:hover,
+a.card:focus,
+a.card.active {
+  border-color: #337ab7;
+}
+.card .caption {
+  padding: 9px;
+  color: #333;
+  text-align: left;
+}
+
+.title {
+  color: #990000;
+  font-size: 105%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.view {
+  text-decoration: none;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.view:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+
+.rating {
+  float: right;
+  color: #449d44;
+}
+
+.rating img {
+  vertical-align: bottom;
+}
+
+.price {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  display: block;
+  color: #990000;
+  background-color: #ccc;
+  opacity: .7;
+  font-size: 120%;
+  line-height: 1.9em;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 30px;
+  text-align: center;
+}
