@@ -3,16 +3,34 @@
 <head>
 	<title>Group 1 | CS 174 - Intro To Web Development | Project Scraping BnB</title>
 	<link rel="stylesheet" type="text/css" href="template.css">
+ 	 <link rel="import" href="temp.hip">
 </head>
 <body >
 
 	<div class="wrapper">
-		<h1>Bed & Breakfast: Airbnb + Wimdu <small>Group 1 - CS 174</small></h1>
+		<h1>Bed & Breakfast: Airbnb + Homeaway <small>Group 1 - CS 174</small></h1>
 		<h3>Aishwarya Venketeswaran | Brendon Yim | Hung Tran | John Franklin | Kun Su | Mohammad AbdelJabbar
+			<form method="POST">
+  			Location:<input type="text" name="city" value="City">
+  			<input type="text" name="state" value="State/Country">
+			Guests<input type="text" name="guests" value="Guests">
+			Dates:<input type="date" name="checkin" >
+			<input type="date" name="checkout" >
+			Price Range:<input type="text" name="priceMin" value="Minimum Price in $">
+			<input type="text" name="priceMax" value="Maximum Price in $">
+  			<input type="submit" value="Submit" onclick=myFunction()>
+			</form>
+		<script>
+function myFunction() {
+   start(document.getElementById("city").value,document.getElementById("state").value,document.getElementById("guests").value,document.getElementById("checkin").value,document.getElementById("checkout").value,document.getElementById("priceMin").value,,document.getElementById("priceMax").value)
+}
+</script>
 		<div class="listings">
 			{{ listings }}
 		</div>
 	</div>
+
+
 	
 
 </body>

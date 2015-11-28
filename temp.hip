@@ -99,7 +99,8 @@ def scrape_wimdu(filename, soup):
 			title = card.find("a", { "class": "hit-url js-hitLink" }).getText()
 		else:
 			title = "\n"
-		theFile.write(title[0:19] + '\n')
+		set_encoding("ascii")
+		theFile.write(title + '\n')
 
 		### 3. Link Href ### get link path in the card attribute data-url
 		if card.find("a", { "class": "hit-url listing-url js-hitLink" }):
@@ -209,23 +210,27 @@ def render():
 	print(html)
 
 
-# this is the URL we're scraping data from
-url_airbnb = "https://www.airbnb.com/s/London"
-url_uk = "https://www.homeaway.co.uk/search/keywords:London"
+def start(city,state,guests,checkin,checkout,priceMin,priceMax):
 
-hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-       'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-       'Accept-Encoding': 'none',
-       'Accept-Language': 'en-US,en;q=0.8',
-       'Connection': 'keep-alive'}
+	print(url_airbnb)
+	print(url_uk)
+	# this is the URL we're scraping data from
+	url_airbnb = "https://www.airbnb.com/s/" + city + "," +  state + "?guests=" + guests + "&checkin=" +checkin + "&checkout=" + checkout
+	url_uk = "https://www.homeaway.co.uk/search/keywords:" + city + "/" + state + "/arrival:"+checkin +"/departure:" +  checkout  + "/minSleeps/" + + guests
 
-# scraped data files
-data_airbnb = "airbnb.txt"
-data_wimdu = "uk.txt"
+	hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+       	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+       	'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+       	'Accept-Encoding': 'none',
+       	'Accept-Language': 'en-US,en;q=0.8',
+       	'Connection': 'keep-alive'}
 
-scrape_airbnb(data_airbnb, getSoup(url_airbnb))
-scrape_wimdu(data_wimdu, getSoup(url_uk))
+	# scraped data files
+	data_airbnb = "airbnb.txt"
+	data_wimdu = "uk.txt"
+
+	scrape_airbnb(data_airbnb, getSoup(url_airbnb))
+	scrape_wimdu(data_wimdu, getSoup(url_uk))
 
 
 render()
