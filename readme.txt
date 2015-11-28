@@ -1,6 +1,1 @@
-Run:
-
-From a command line interface:
-	python3 scraper.py
-
-Enter desired vacation destication when prompt
+Place all the documents inside www folder. Then, go to a browser and type localhost/temp.hip
