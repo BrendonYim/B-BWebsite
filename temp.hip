@@ -1,15 +1,26 @@
+import sys
 from BeautifulSoup import BeautifulSoup
 import urllib2
 import re
 import os
+import datetime
 
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 ################# HELPER FUNCTIONS ################################
 def getSoup(url):
-
+	hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'}
+	
 	# use usllib to open the website at the specified url
 	req = urllib2.Request(url, headers=hdr)
-	response = urllib2.urlopen(req)
-	page = response.read()
+	
+	page = '<html></html>'
+	try:
+		response = urllib2.urlopen(req)
+		page = response.read()
+	except urllib2.URLError, e:
+		print url
+		print(e)
 
 	# use beautifulsoup to get the html returned from urllib
 	soup = BeautifulSoup(page)
@@ -99,7 +110,7 @@ def scrape_wimdu(filename, soup):
 			title = card.find("a", { "class": "hit-url js-hitLink" }).getText()
 		else:
 			title = "\n"
-		set_encoding("ascii")
+
 		theFile.write(title + '\n')
 
 		### 3. Link Href ### get link path in the card attribute data-url
@@ -134,13 +145,20 @@ def scrape_wimdu(filename, soup):
 		theFile.write('##### END LISTING #####\n')
 	
 	
-	
+def scrape_weather(filename, soup):
+	theFile = open(filename, 'w')
 
+	loc 	= soup.find('div', {"id": "wob_loc" }).getText()
+	time 	= soup.find('div', {"id": "wob_dts" }).getText()
+	week	= str(soup.find('div', {"id": "wob_dp" }))
+	
+	theFile.write("<h3>" + loc + " | " + time + "</h3>" + '\n' + week)
 
 def render():	
 	# scrapedContent.txt contains the data we need to display in the html
 	data1 = open('airbnb.txt', 'r')
 	data2 = open('uk.txt', 'r')
+	weather = open('weather.txt', 'r')
 
 	html = open('template.html', 'r').read()
 	listing ='listingTemplate.html'
@@ -207,30 +225,73 @@ def render():
 		i = i + 1
 	
 	html = re.sub('\{\{ listings \}\}', contents, html)
+
+	html = re.sub('\{\{ weather \}\}', weather.read(), html)
+
 	print(html)
 
 
-def start(city,state,guests,checkin,checkout,priceMin,priceMax):
+def start(location,guests,checkin,checkout,priceMin,priceMax):
 
-	print(url_airbnb)
-	print(url_uk)
+	#print(url_airbnb)
+	#print(url_uk)
 	# this is the URL we're scraping data from
-	url_airbnb = "https://www.airbnb.com/s/" + city + "," +  state + "?guests=" + guests + "&checkin=" +checkin + "&checkout=" + checkout
-	url_uk = "https://www.homeaway.co.uk/search/keywords:" + city + "/" + state + "/arrival:"+checkin +"/departure:" +  checkout  + "/minSleeps/" + + guests
+	air_params = urllib2.quote(location) + "?guests=" + urllib2.quote(guests)
+	if checkin:
+		air_params = air_params + "&checkin=" + urllib2.quote(datetime.datetime.strptime(checkin, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if checkout:
+		air_params = air_params + "&checkout=" + urllib2.quote(datetime.datetime.strptime(checkout, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if priceMin:
+		air_params = air_params + "&price_min=" + urllib2.quote(priceMin)
+	if priceMax:
+		air_params = air_params + "&price_max=" + urllib2.quote(priceMax)
 
-	hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-       	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-       	'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-       	'Accept-Encoding': 'none',
-       	'Accept-Language': 'en-US,en;q=0.8',
-       	'Connection': 'keep-alive'}
+	url_airbnb = "https://www.airbnb.com/s/" +  air_params
 
+	uk_params = "keywords:" + urllib2.quote(location)
+	if checkin:
+		uk_params = uk_params + "/arrival:" + checkin
+	if checkout:
+		uk_params = uk_params + "/departure:" + checkout
+	if guests:
+		uk_params = uk_params + "/minSleeps/" + urllib2.quote(guests)
+	if priceMin:
+		uk_params = uk_params + "/minNightlyPrice/" + urllib2.quote(priceMin)
+	if priceMax:
+		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
+
+	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
+
+	url_weather = "https://www.google.com/search?q=weather+" + urllib2.quote(location)
+	
 	# scraped data files
 	data_airbnb = "airbnb.txt"
 	data_wimdu = "uk.txt"
+	data_weather = "weather.txt"
 
 	scrape_airbnb(data_airbnb, getSoup(url_airbnb))
 	scrape_wimdu(data_wimdu, getSoup(url_uk))
+	scrape_weather(data_weather, getSoup(url_weather))
 
+def reset():
+	d1 = open('airbnb.txt', 'w')
+	d2 = open('uk.txt', 'w')
+	w = open('weather.txt', 'w')
+
+	d1.write('')
+	d2.write('')
+	w.write('')
+
+if REQUEST:
+	location = REQUEST['location'].strip()
+	guests = REQUEST['guests'].strip()
+	checkin = REQUEST['checkin'].strip()
+	checkout = REQUEST['checkout'].strip()
+	priceMin = REQUEST['priceMin'].strip()
+	priceMax = REQUEST['priceMax'].strip()
+
+	start(location, guests, checkin, checkout, priceMin, priceMax)
+else:
+	reset()
 
 render()

@@ -109,6 +109,8 @@ a.card.active {
 .rating {
   float: right;
   color: #449d44;
+  font-size: 150%;
+  font-weight: bold;
 }
 
 .rating img {
@@ -124,10 +126,67 @@ a.card.active {
   background-color: #ccc;
   opacity: .7;
   font-size: 120%;
-  line-height: 1.9em;
+  font-weight: bold;
+  line-height: 2.8em;
   width: 50px;
   height: 50px;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 35px;
   text-align: center;
+}
+
+form {
+  padding: 10px;
+  border-bottom: 4px inset orange;
+  overflow: auto;
+  clear: both;
+}
+
+form .input-wrapper{
+  margin: 1em 1em;
+  float: left;
+}
+
+form .button-wrapper {
+  text-align: center;
+  text-align: right;
+  float: left;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  color: #3366CC;
+  margin: 0.2em 0;
+}
+
+textarea, select, input[type="text"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], input[type="password"], input[type="color"], input[type="file"], input[type="color"], input[type="number"], input[type="range"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"] {
+    margin: .2em 0;
+    padding: .25em .4em;
+    border: 1px solid #ddd;
+    width: 200px; 
+    height: 2em;
+}
+
+input[type="date"] {
+  width: 150px;
+}
+
+input[type="number"] {
+  width: 100px;
+}
+
+button {
+  background-color: #99CC99;
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #ddd; 
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin: 0.2em 0.5em;
+}
+
+button:hover {
+  border: 1px outset #ddd;
+  background-color: #99CC88;
 }
