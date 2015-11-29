@@ -124,22 +124,30 @@ a.card.active {
   background-color: #ccc;
   opacity: .7;
   font-size: 120%;
-  line-height: 1.9em;
+  font-weight: bold;
+  line-height: 2.8em;
   width: 50px;
   height: 50px;
   padding: 10px;
-  border-radius: 30px;
+  border-radius: 35px;
   text-align: center;
 }
 
+form {
+  padding: 10px;
+  border-bottom: 4px inset orange;
+  overflow: auto;
+}
+
 form .input-wrapper{
-  margin: 1em 0;
+  margin: 1em 1em;
+  float: left;
 }
 
 form .button-wrapper {
   text-align: center;
-  width: 400px;
   text-align: right;
+  float: left;
 }
 
 label {
@@ -157,6 +165,14 @@ textarea, select, input[type="text"], input[type="email"], input[type="search"],
     height: 2em;
 }
 
+input[type="date"] {
+  width: 150px;
+}
+
+input[type="number"] {
+  width: 100px;
+}
+
 button {
   background-color: #99CC99;
   color: #fff;
@@ -164,4 +180,10 @@ button {
   border: 1px solid #ddd; 
   padding: 10px 20px;
   border-radius: 5px;
+  margin: 0.2em 0.5em;
+}
+
+button:hover {
+  border: 1px outset #ddd;
+  background-color: #99CC88;
 }

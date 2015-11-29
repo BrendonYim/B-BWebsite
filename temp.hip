@@ -1,15 +1,25 @@
+import sys
 from BeautifulSoup import BeautifulSoup
 import urllib2
 import re
 import os
 
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 ################# HELPER FUNCTIONS ################################
 def getSoup(url):
-
+	hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'}
+	
 	# use usllib to open the website at the specified url
 	req = urllib2.Request(url, headers=hdr)
-	response = urllib2.urlopen(req)
-	page = response.read()
+	
+	page = '<html></html>'
+	try:
+		response = urllib2.urlopen(req)
+		page = response.read()
+	except urllib2.URLError, e:
+		print url
+		print(e)
 
 	# use beautifulsoup to get the html returned from urllib
 	soup = BeautifulSoup(page)
@@ -99,7 +109,7 @@ def scrape_wimdu(filename, soup):
 			title = card.find("a", { "class": "hit-url js-hitLink" }).getText()
 		else:
 			title = "\n"
-		set_encoding("ascii")
+
 		theFile.write(title + '\n')
 
 		### 3. Link Href ### get link path in the card attribute data-url
@@ -215,40 +225,33 @@ def start(location,guests,checkin,checkout,priceMin,priceMax):
 	#print(url_airbnb)
 	#print(url_uk)
 	# this is the URL we're scraping data from
-	air_params = urllib2.quote(location + "?guests=" + guests + "&checkin=" +checkin + "&checkout=" + checkout)
+	air_params = urllib2.quote(location) + "?guests=" + urllib2.quote(guests) + "&checkin=" + urllib2.quote(checkin) + "&checkout=" + urllib2.quote(checkout)
 	url_airbnb = "https://www.airbnb.com/s/" +  air_params
 
 	uk_params = "keywords:" + urllib2.quote(location)
 	if checkin:
-		uk_params = uk_params + "/arrival:" + checkin
+		uk_params = uk_params + "/arrival:" + urllib2.quote(checkin)
 	if checkout:
-		uk_params = uk_params + "/departure:" +  checkout
+		uk_params = uk_params + "/departure:" +  urllib2.quote(checkout)
 	if guests:
-		uk_params = uk_params + "/minSleeps/" + guests
+		uk_params = uk_params + "/minSleeps/" + urllib2.quote(guests)
 
 	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
-	print url_uk
+	
 	# scraped data files
 	data_airbnb = "airbnb.txt"
 	data_wimdu = "uk.txt"
 
-	#scrape_airbnb(data_airbnb, getSoup(url_airbnb))
-	#scrape_wimdu(data_wimdu, getSoup(url_uk))
-
-hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-       	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-       	'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-       	'Accept-Encoding': 'none',
-       	'Accept-Language': 'en-US,en;q=0.8',
-       	'Connection': 'keep-alive'}
+	scrape_airbnb(data_airbnb, getSoup(url_airbnb))
+	scrape_wimdu(data_wimdu, getSoup(url_uk))
 
 if REQUEST:
-	location = REQUEST['location']
-	guests = REQUEST['guests']
-	checkin = REQUEST['checkin']
-	checkout = REQUEST['checkout']
-	priceMin = REQUEST['priceMin']
-	priceMax = REQUEST['priceMax']
+	location = REQUEST['location'].strip()
+	guests = REQUEST['guests'].strip()
+	checkin = REQUEST['checkin'].strip()
+	checkout = REQUEST['checkout'].strip()
+	priceMin = REQUEST['priceMin'].strip()
+	priceMax = REQUEST['priceMax'].strip()
 
 	start(location, guests, checkin, checkout, priceMin, priceMax)
 
