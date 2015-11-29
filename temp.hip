@@ -145,13 +145,20 @@ def scrape_wimdu(filename, soup):
 		theFile.write('##### END LISTING #####\n')
 	
 	
-	
+def scrape_weather(filename, soup):
+	theFile = open(filename, 'w')
 
+	loc 	= soup.find('div', {"id": "wob_loc" }).getText()
+	time 	= soup.find('div', {"id": "wob_dts" }).getText()
+	week	= str(soup.find('div', {"id": "wob_dp" }))
+	
+	theFile.write("<h3>" + loc + " | " + time + "</h3>" + '\n' + week)
 
 def render():	
 	# scrapedContent.txt contains the data we need to display in the html
 	data1 = open('airbnb.txt', 'r')
 	data2 = open('uk.txt', 'r')
+	weather = open('weather.txt', 'r')
 
 	html = open('template.html', 'r').read()
 	listing ='listingTemplate.html'
@@ -218,6 +225,9 @@ def render():
 		i = i + 1
 	
 	html = re.sub('\{\{ listings \}\}', contents, html)
+
+	html = re.sub('\{\{ weather \}\}', weather.read(), html)
+
 	print(html)
 
 
@@ -251,13 +261,26 @@ def start(location,guests,checkin,checkout,priceMin,priceMax):
 		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
 
 	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
+
+	url_weather = "https://www.google.com/search?q=weather+" + urllib2.quote(location)
 	
 	# scraped data files
 	data_airbnb = "airbnb.txt"
 	data_wimdu = "uk.txt"
+	data_weather = "weather.txt"
 
 	scrape_airbnb(data_airbnb, getSoup(url_airbnb))
 	scrape_wimdu(data_wimdu, getSoup(url_uk))
+	scrape_weather(data_weather, getSoup(url_weather))
+
+def reset():
+	d1 = open('airbnb.txt', 'w')
+	d2 = open('uk.txt', 'w')
+	w = open('weather.txt', 'w')
+
+	d1.write('')
+	d2.write('')
+	w.write('')
 
 if REQUEST:
 	location = REQUEST['location'].strip()
@@ -268,5 +291,7 @@ if REQUEST:
 	priceMax = REQUEST['priceMax'].strip()
 
 	start(location, guests, checkin, checkout, priceMin, priceMax)
+else:
+	reset()
 
 render()

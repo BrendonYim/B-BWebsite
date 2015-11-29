@@ -8,10 +8,14 @@
 <body >
 
 	<div class="wrapper">
-		<h1>Bed & Breakfast: Airbnb + Homeaway <small>Group 1 - CS 174</small></h1>
-		<h3>Aishwarya Venketeswaran | Brendon Yim | Hung Tran | John Franklin | Kun Su | Mohammad AbdelJabbar</h3>
-
-		<form method="POST">
+		<div style="width:50%; float:left;">
+			<h1>Bed & Breakfast: Airbnb + Homeaway <small>Group 1 - CS 174</small></h1>
+			<h3>Aishwarya Venketeswaran | Brendon Yim | Hung Tran | John Franklin | Kun Su | Mohammad AbdelJabbar</h3>
+		</div>
+		<div style="width:50%; float:right; text-align:right;">{{ weather }}</div>
+		
+		
+		<form method="POST" name="formMain">
 			<div class="input-wrapper">
 	  			<label>Location: </label>
 	  			<input type="text" name="location" value="" placeholder="Where to?" required>
@@ -36,7 +40,7 @@
   			
   			<div class="button-wrapper">
   				<br />
-  				<button type="submit">Submit</button>
+  				<button type="submit" onclick="this.innerHTML='Please wait...'; this.setAttribute('disabled', true); document.forms[0].submit();">Submit</button>
   			</div>
 		</form>
 

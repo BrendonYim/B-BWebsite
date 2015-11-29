@@ -109,6 +109,8 @@ a.card.active {
 .rating {
   float: right;
   color: #449d44;
+  font-size: 150%;
+  font-weight: bold;
 }
 
 .rating img {
@@ -137,6 +139,7 @@ form {
   padding: 10px;
   border-bottom: 4px inset orange;
   overflow: auto;
+  clear: both;
 }
 
 form .input-wrapper{
