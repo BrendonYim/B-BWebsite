@@ -3,6 +3,7 @@ from BeautifulSoup import BeautifulSoup
 import urllib2
 import re
 import os
+import datetime
 
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -225,16 +226,29 @@ def start(location,guests,checkin,checkout,priceMin,priceMax):
 	#print(url_airbnb)
 	#print(url_uk)
 	# this is the URL we're scraping data from
-	air_params = urllib2.quote(location) + "?guests=" + urllib2.quote(guests) + "&checkin=" + urllib2.quote(checkin) + "&checkout=" + urllib2.quote(checkout)
+	air_params = urllib2.quote(location) + "?guests=" + urllib2.quote(guests)
+	if checkin:
+		air_params = air_params + "&checkin=" + urllib2.quote(datetime.datetime.strptime(checkin, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if checkout:
+		air_params = air_params + "&checkout=" + urllib2.quote(datetime.datetime.strptime(checkout, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if priceMin:
+		air_params = air_params + "&price_min=" + urllib2.quote(priceMin)
+	if priceMax:
+		air_params = air_params + "&price_max=" + urllib2.quote(priceMax)
+
 	url_airbnb = "https://www.airbnb.com/s/" +  air_params
 
 	uk_params = "keywords:" + urllib2.quote(location)
 	if checkin:
-		uk_params = uk_params + "/arrival:" + urllib2.quote(checkin)
+		uk_params = uk_params + "/arrival:" + checkin
 	if checkout:
-		uk_params = uk_params + "/departure:" +  urllib2.quote(checkout)
+		uk_params = uk_params + "/departure:" + checkout
 	if guests:
 		uk_params = uk_params + "/minSleeps/" + urllib2.quote(guests)
+	if priceMin:
+		uk_params = uk_params + "/minNightlyPrice/" + urllib2.quote(priceMin)
+	if priceMax:
+		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
 
 	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
 	
