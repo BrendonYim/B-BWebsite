@@ -15,10 +15,10 @@
 		<div style="width:50%; float:right; text-align:right;">{{ weather }}</div>
 		
 		
-		<form method="POST" name="formMain">
+		<form method="POST" name="formMain" onsubmit="document.getElementById('btnSubmit').innerHTML='Please wait...'; document.getElementById('btnSubmit').setAttribute('disabled', true); setTimeout(function() { document.getElementById('btnSubmit').innerHTML='working on it...' }, 5000);">
 			<div class="input-wrapper">
 	  			<label>Location: </label>
-	  			<input type="text" name="location" value="" placeholder="Where to?" required>
+	  			<input type="text" name="location" value="" placeholder="Where to?">
 	  		</div>
 			
 			<div class="input-wrapper">
@@ -40,7 +40,7 @@
   			
   			<div class="button-wrapper">
   				<br />
-  				<button type="submit" onclick="this.innerHTML='Please wait...'; this.setAttribute('disabled', true); document.forms[0].submit();">Submit</button>
+  				<button id="btnSubmit" type="submit">Submit</button>
   			</div>
 		</form>
 

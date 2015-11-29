@@ -5,8 +5,8 @@ import re
 import os
 import datetime
 
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
+reload(sys)
+sys.setdefaultencoding('utf-8')
 ################# HELPER FUNCTIONS ################################
 def getSoup(url):
 	hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'}
@@ -26,10 +26,13 @@ def getSoup(url):
 	soup = BeautifulSoup(page)
 	return soup
 
-def scrape_airbnb(filename, soup):
+def scrape_airbnb(filename, soup, append=False):
 
 	# open file to write to
-	theFile = open(filename, 'w')
+	if append:
+		theFile = open(filename, 'a')
+	else:
+		theFile = open(filename, 'w')
 
 	# find all blocks that contains our title and image that we want
 	# bs4 should give us back an array
@@ -86,9 +89,12 @@ def reqClass(tag):
     return tag and re.compile("rating rating*").search(tag)
 
 
-def scrape_wimdu(filename, soup):
+def scrape_wimdu(filename, soup, append=False):
 	
-	theFile = open(filename, 'w')
+	if append:
+		theFile = open(filename, 'a')
+	else:
+		theFile = open(filename, 'w')
 
 	cards = soup.findAll('div', { "class": "box-content" })
 	for card in cards:
@@ -148,9 +154,14 @@ def scrape_wimdu(filename, soup):
 def scrape_weather(filename, soup):
 	theFile = open(filename, 'w')
 
-	loc 	= soup.find('div', {"id": "wob_loc" }).getText()
-	time 	= soup.find('div', {"id": "wob_dts" }).getText()
-	week	= str(soup.find('div', {"id": "wob_dp" }))
+	loc, time, week = "", "", ""
+
+	if soup.find('div', {"id": "wob_loc" }):
+		loc = soup.find('div', {"id": "wob_loc" }).getText()
+	if soup.find('div', {"id": "wob_dts" }):
+		time = soup.find('div', {"id": "wob_dts" }).getText()
+	if soup.find('div', {"id": "wob_dp" }):
+		week = str(soup.find('div', {"id": "wob_dp" }))
 	
 	theFile.write("<h3>" + loc + " | " + time + "</h3>" + '\n' + week)
 
@@ -228,10 +239,26 @@ def render():
 
 	html = re.sub('\{\{ weather \}\}', weather.read(), html)
 
-	print(html)
+	oSoup = BeautifulSoup(html)
+	if location:
+		oSoup.find('input', { "name": 'location'})['value'] = location
+	if guests:
+		oSoup.find('input', { "name": 'guests'})['value'] = guests
+	if checkin:
+		oSoup.find('input', { "name": 'checkin'})['value'] = checkin
+	if checkout:
+		oSoup.find('input', { "name": 'checkout'})['value'] = checkout
+	if checkin:
+		oSoup.find('input', { "name": 'priceMin'})['value'] = priceMin
+	if checkin:
+		oSoup.find('input', { "name": 'priceMax'})['value'] = priceMax
+
+	oSoup.prettify()
+
+	print(str(oSoup))
 
 
-def start(location,guests,checkin,checkout,priceMin,priceMax):
+def start(location,guests,checkin,checkout,priceMin,priceMax, append=False):
 
 	#print(url_airbnb)
 	#print(url_uk)
@@ -269,8 +296,8 @@ def start(location,guests,checkin,checkout,priceMin,priceMax):
 	data_wimdu = "uk.txt"
 	data_weather = "weather.txt"
 
-	scrape_airbnb(data_airbnb, getSoup(url_airbnb))
-	scrape_wimdu(data_wimdu, getSoup(url_uk))
+	scrape_airbnb(data_airbnb, getSoup(url_airbnb), append)
+	scrape_wimdu(data_wimdu, getSoup(url_uk), append)
 	scrape_weather(data_weather, getSoup(url_weather))
 
 def reset():
@@ -282,16 +309,35 @@ def reset():
 	d2.write('')
 	w.write('')
 
+location = ""
+guests = ""
+checkin = ""
+checkout = ""
+priceMin = ""
+priceMax = ""
+
 if REQUEST:
 	location = REQUEST['location'].strip()
-	guests = REQUEST['guests'].strip()
+	if unicode(REQUEST['guests'].strip(), 'utf-8').isnumeric():
+		guests = REQUEST['guests'].strip()
+
 	checkin = REQUEST['checkin'].strip()
 	checkout = REQUEST['checkout'].strip()
-	priceMin = REQUEST['priceMin'].strip()
-	priceMax = REQUEST['priceMax'].strip()
+	
+	if unicode(REQUEST['priceMin'].strip(), 'utf-8').isnumeric():
+		priceMin = REQUEST['priceMin'].strip()
+	
+	if unicode(REQUEST['priceMax'].strip(), 'utf-8').isnumeric():
+		priceMax = REQUEST['priceMax'].strip()
 
 	if location:
 		start(location, guests, checkin, checkout, priceMin, priceMax)
+	elif priceMin or priceMax or guests or checkin or checkout:
+		start('Asia', guests, checkin, checkout, priceMin, priceMax, False)
+		start('Europe', guests, checkin, checkout, priceMin, priceMax, True)
+		start('North America', guests, checkin, checkout, priceMin, priceMax, True)
+		start('South America', guests, checkin, checkout, priceMin, priceMax, True)
+		start('Australia', guests, checkin, checkout, priceMin, priceMax, True)
 else:
 	reset()
 
