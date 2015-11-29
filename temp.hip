@@ -290,7 +290,8 @@ if REQUEST:
 	priceMin = REQUEST['priceMin'].strip()
 	priceMax = REQUEST['priceMax'].strip()
 
-	start(location, guests, checkin, checkout, priceMin, priceMax)
+	if location:
+		start(location, guests, checkin, checkout, priceMin, priceMax)
 else:
 	reset()
 
