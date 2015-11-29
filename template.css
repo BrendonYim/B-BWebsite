@@ -131,3 +131,37 @@ a.card.active {
   border-radius: 30px;
   text-align: center;
 }
+
+form .input-wrapper{
+  margin: 1em 0;
+}
+
+form .button-wrapper {
+  text-align: center;
+  width: 400px;
+  text-align: right;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  color: #3366CC;
+  margin: 0.2em 0;
+}
+
+textarea, select, input[type="text"], input[type="email"], input[type="search"], input[type="tel"], input[type="url"], input[type="password"], input[type="color"], input[type="file"], input[type="color"], input[type="number"], input[type="range"], input[type="date"], input[type="month"], input[type="week"], input[type="time"], input[type="datetime"], input[type="datetime-local"] {
+    margin: .2em 0;
+    padding: .25em .4em;
+    border: 1px solid #ddd;
+    width: 200px; 
+    height: 2em;
+}
+
+button {
+  background-color: #99CC99;
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #ddd; 
+  padding: 10px 20px;
+  border-radius: 5px;
+}
