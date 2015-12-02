@@ -21,6 +21,12 @@
 	  			<input type="text" name="location" value="" placeholder="Where to?">
 	  		</div>
 			
+			<!-- Recommend Result -->
+			<div class="input-wrapper">
+	  			<label>State/Country: </label>
+	  			<input type="text" name="state" value="" placeholder="State/Country?">
+	  		</div>
+			
 			<div class="input-wrapper">
 				<label>Guests: </label>
 				<input type="number" name="guests" value="" placeholder="#">
@@ -49,7 +55,11 @@
 		</div>
 	</div>
 
-
+	<!-- Recommend Result -->
+	<div class="listings">
+	<h2> Recommend Result </h2>
+		{{ recommend_result }}
+	</div>
 	
 
 </body>
