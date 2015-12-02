@@ -171,6 +171,10 @@ def render():
 	data2 = open('uk.txt', 'r')
 	weather = open('weather.txt', 'r')
 
+	#Recommend Result
+	data3 = open('airbnb_R.txt', 'r')
+	data4 = open('uk_R.txt', 'r')
+	
 	html = open('template.html', 'r').read()
 	listing ='listingTemplate.html'
 
@@ -186,6 +190,10 @@ def render():
 	contents = ""
 	card = ""
 	details = ""
+	
+	#Recommend Result
+	contents2 = ""
+	
 	i = 1
 	for line in data1:
 			if line.strip() == "##### END LISTING #####":
@@ -235,10 +243,62 @@ def render():
 				details = details + line
 		i = i + 1
 	
+	#Recommend Result
+	for line in data3:
+		if line.strip() == "##### END LISTING #####":
+			card = card.replace("{{ details }}", details)
+			contents2 = contents2 + card
+		elif line.strip() == "##### LISTING #####":
+			card = open(listing).read()
+	
+			details = ""
+			i = 0
+		else:
+			if i == 1:
+				card = card.replace('{{ image }}', line)
+			elif i == 2:
+				card = card.replace('{{ title }}', line)
+			elif i == 3:
+				card = card.replace('{{ url }}', line)
+			elif i == 4:
+				card = card.replace('{{ rating }}', line)
+			elif i == 5:
+				card = card.replace('{{ price }}', line)
+			else:
+				details = details + line
+		i = i + 1
+		
+	for line in data4:
+		if line.strip() == "##### END LISTING #####":
+			card = card.replace("{{ details }}", details)
+			contents2 = contents2 + card
+		elif line.strip() == "##### LISTING #####":
+			card = open(listing).read()
+	
+			details = ""
+			i = 0
+		else:
+			if i == 1:
+				card = card.replace('{{ image }}', line)
+			elif i == 2:
+				card = card.replace('{{ title }}', line)
+			elif i == 3:
+				card = card.replace('{{ url }}', line)
+			elif i == 4:
+				card = card.replace('{{ rating }}', line)
+			elif i == 5:
+				card = card.replace('{{ price }}', line)
+			else:
+				details = details + line
+		i = i + 1
+		
 	html = re.sub('\{\{ listings \}\}', contents, html)
 
 	html = re.sub('\{\{ weather \}\}', weather.read(), html)
 
+	#Recommend Result
+	html = re.sub('\{\{ recommend_result \}\}', contents2, html)
+	
 	oSoup = BeautifulSoup(html)
 	if location:
 		oSoup.find('input', { "name": 'location'})['value'] = location
@@ -305,10 +365,55 @@ def reset():
 	d2 = open('uk.txt', 'w')
 	w = open('weather.txt', 'w')
 
+	#Recommend Result
+	d3 = open('airbnb_R.txt', 'w')
+	d4 = open('uk_R.txt', 'w')
+	
 	d1.write('')
 	d2.write('')
 	w.write('')
 
+	#Recommend Result
+	d3.write('')
+	d4.write('')
+	
+#Recommend Result
+def	scrape_recommendresult(state,guests,checkin,checkout,priceMin,priceMax, append=False):
+	
+
+	air_params = urllib2.quote(state) + "?guests=" + urllib2.quote(guests)
+	if checkin:
+		air_params = air_params + "&checkin=" + urllib2.quote(datetime.datetime.strptime(checkin, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if checkout:
+		air_params = air_params + "&checkout=" + urllib2.quote(datetime.datetime.strptime(checkout, '%Y-%m-%d').strftime('%m/%d/%y'))
+	if priceMin:
+		air_params = air_params + "&price_min=" + urllib2.quote(priceMin)
+	if priceMax:
+		air_params = air_params + "&price_max=" + urllib2.quote(priceMax)
+
+	url_airbnb = "https://www.airbnb.com/s/" +  air_params
+
+	uk_params = "keywords:" + urllib2.quote(state)
+	if checkin:
+		uk_params = uk_params + "/arrival:" + checkin
+	if checkout:
+		uk_params = uk_params + "/departure:" + checkout
+	if guests:
+		uk_params = uk_params + "/minSleeps/" + urllib2.quote(guests)
+	if priceMin:
+		uk_params = uk_params + "/minNightlyPrice/" + urllib2.quote(priceMin)
+	if priceMax:
+		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
+
+	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
+	
+	# scraped data files
+	data_airbnb = "airbnb_R.txt"
+	data_wimdu = "uk_R.txt"
+
+	scrape_airbnb(data_airbnb, getSoup(url_airbnb), append)
+	scrape_wimdu(data_wimdu, getSoup(url_uk), append)
+	
 location = ""
 guests = ""
 checkin = ""
@@ -316,8 +421,15 @@ checkout = ""
 priceMin = ""
 priceMax = ""
 
+#Recommend Result
+state = ""
+
 if REQUEST:
 	location = REQUEST['location'].strip()
+	
+	#Recommend Result
+	state = REQUEST['state'].strip()
+	
 	if unicode(REQUEST['guests'].strip(), 'utf-8').isnumeric():
 		guests = REQUEST['guests'].strip()
 
@@ -330,6 +442,10 @@ if REQUEST:
 	if unicode(REQUEST['priceMax'].strip(), 'utf-8').isnumeric():
 		priceMax = REQUEST['priceMax'].strip()
 
+	#Recommend Result
+	if state:
+		scrape_recommendresult(state, guests, checkin, checkout, priceMin, priceMax)
+		
 	if location:
 		start(location, guests, checkin, checkout, priceMin, priceMax)
 	elif priceMin or priceMax or guests or checkin or checkout:
