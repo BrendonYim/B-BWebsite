@@ -293,7 +293,6 @@ def render():
 		i = i + 1
 		
 	html = re.sub('\{\{ listings \}\}', contents, html)
-
 	html = re.sub('\{\{ weather \}\}', weather.read(), html)
 
 	#Recommend Result
@@ -312,7 +311,11 @@ def render():
 		oSoup.find('input', { "name": 'priceMin'})['value'] = priceMin
 	if checkin:
 		oSoup.find('input', { "name": 'priceMax'})['value'] = priceMax
-
+	
+	#Recommend Result
+	if state:
+		oSoup.find('input', { "name": 'state'})['value'] = state
+		
 	oSoup.prettify()
 
 	print(str(oSoup))
@@ -376,7 +379,7 @@ def reset():
 	#Recommend Result
 	d3.write('')
 	d4.write('')
-	
+
 #Recommend Result
 def	scrape_recommendresult(state,guests,checkin,checkout,priceMin,priceMax, append=False):
 	
@@ -445,15 +448,21 @@ if REQUEST:
 	#Recommend Result
 	if state:
 		scrape_recommendresult(state, guests, checkin, checkout, priceMin, priceMax)
+	elif priceMin or priceMax or guests or checkin or checkout:
+		#scrape_recommendresult('Paris', guests, checkin, checkout, priceMin, priceMax, False)
+		#scrape_recommendresult('San Jose', guests, checkin, checkout, priceMin, priceMax, True)
+		scrape_recommendresult('New York', guests, checkin, checkout, priceMin, priceMax, True)
+		#scrape_recommendresult('Tokyo', guests, checkin, checkout, priceMin, priceMax, True)
+		scrape_recommendresult('Sydney', guests, checkin, checkout, priceMin, priceMax, True)
 		
 	if location:
 		start(location, guests, checkin, checkout, priceMin, priceMax)
 	elif priceMin or priceMax or guests or checkin or checkout:
-		start('Asia', guests, checkin, checkout, priceMin, priceMax, False)
-		start('Europe', guests, checkin, checkout, priceMin, priceMax, True)
-		start('North America', guests, checkin, checkout, priceMin, priceMax, True)
-		start('South America', guests, checkin, checkout, priceMin, priceMax, True)
-		start('Australia', guests, checkin, checkout, priceMin, priceMax, True)
+		#start('Paris', guests, checkin, checkout, priceMin, priceMax, False)
+		start('San Jose', guests, checkin, checkout, priceMin, priceMax, True)
+		#start('New York', guests, checkin, checkout, priceMin, priceMax, True)
+		#start('Tokyo', guests, checkin, checkout, priceMin, priceMax, True)
+		start('Sydney', guests, checkin, checkout, priceMin, priceMax, True)
 else:
 	reset()
 
