@@ -15,7 +15,7 @@
 		<div style="width:50%; float:right; text-align:right;">{{ weather }}</div>
 		
 		
-		<form method="POST" name="formMain" onsubmit="document.getElementById('btnSubmit').innerHTML='Please wait...'; document.getElementById('btnSubmit').setAttribute('disabled', true); setTimeout(function() { document.getElementById('btnSubmit').innerHTML='working on it...' }, 5000);">
+		<form method="POST" name="formMain" onsubmit="handleSubmission();">
 			<div class="input-wrapper">
 	  			<label>Location: </label>
 	  			<input type="text" name="location" value="" placeholder="Where to?">
@@ -48,6 +48,7 @@
   				<br />
   				<button id="btnSubmit" type="submit">Submit</button>
   			</div>
+  			<div id="catCage">
 		</form>
 
 		<div class="listingContainer">
@@ -64,7 +65,27 @@
 	</div>
 
 	
-	
+	<script>
+		function handleSubmission() {
+			var btn = document.getElementById('btnSubmit');
+			btn.innerHTML='Please wait...'; 
+			btn.setAttribute('disabled', true); 
+			var catCage = document.getElementById('catCage');
+			i = 0;
+			function catgen() {
+				var d = new Date();
+				catCage.innerHTML = '';
+				cat = document.createElement('img');
+				cat.src = "http://thecatapi.com/api/images/get?format=src&results_per_page=1" + "&time=" + d.getTime();
+				catCage.appendChild(cat);
+				btn.innerHTML="Not what you're looking for but it helps with the wait...";
+				i++;
+			}
+
+			setTimeout(catgen, 700);
+			setInterval(catgen, 8000);
+		}
+	</script>
 
 </body>
 </html>

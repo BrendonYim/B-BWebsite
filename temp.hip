@@ -148,7 +148,9 @@ def scrape_wimdu(filename, soup, append=False):
 
 		if price == None:
 			price = "-"
-		theFile.write("$ " + price.group(0) + '\n')
+			theFile.write("$ " + price + '\n')
+		else:
+			theFile.write("$ " + price.group(0) + '\n')
 
 		### 6. Details ###
 		#details = card.find('div', { "class":"offer__description"}).getText().strip()
@@ -432,6 +434,7 @@ def	scrape_recommendresult(state,guests,checkin,checkout,priceMin,priceMax, appe
 	scrape_airbnb(data_airbnb, getSoup(url_airbnb), append)
 	scrape_wimdu(data_wimdu, getSoup(url_uk), append)
 	
+cats = '<a href="http://thecatapi.com"><img src="http://thecatapi.com/api/images/get?format=src&type=gif"></a>'
 location = ""
 guests = ""
 checkin = ""
