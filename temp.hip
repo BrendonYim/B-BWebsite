@@ -4,6 +4,7 @@ import urllib2
 import re
 import os
 import datetime
+import random
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -45,7 +46,7 @@ def scrape_airbnb(filename, soup, append=False):
 		### 1. Image source ### find images in the block
 		imgsrc = card.find('img')['data-urls']
 		if imgsrc == None:
-			imgsrc = "noimage.jpg"
+			imgsrc = "noimage.JPG"
 		else:
 			imgsrc = imgsrc.split('", "')[0].replace("[", "").replace('"', '')
 		theFile.write(imgsrc + '\n')
@@ -105,10 +106,12 @@ def scrape_wimdu(filename, soup, append=False):
 		if card.find('div', { "class":"hit-thumbnail" }):
 			imgsrc = card.find('div', { "class":"hit-thumbnail" })['style'].strip()
 			imgsrc = imgsrc[imgsrc.find("(")+1:imgsrc.find(")")]
+		elif card.find('div', { "class":"hit-thumbnail js-lazyLoadImage" }) :
+			imgsrc = card.find('div', { "class":"hit-thumbnail js-lazyLoadImage" })['data-bkg'].strip()
 		elif card.find('div', { "class":"hit-thumbnail imgDelayLoadRef" }) :
 			imgsrc = card.find('div', { "class":"hit-thumbnail imgDelayLoadRef" })['ref'].strip()
 		else:
-			imgsrc = "noimage.jpg"
+			imgsrc = "noimage.JPG"
 		theFile.write(imgsrc + '\n')
 
 		### 2. Title ### get title by attribute data-name in the card itself
@@ -121,7 +124,7 @@ def scrape_wimdu(filename, soup, append=False):
 
 		### 3. Link Href ### get link path in the card attribute data-url
 		if card.find("a", { "class": "hit-url listing-url js-hitLink" }):
-			href = 'https://www.homeaway.co.uk' + card.find("a", { "class":"hit-url listing-url js-hitLink" })['href']
+			href = 'https://www.homeaway.com' + card.find("a", { "class":"hit-url listing-url js-hitLink" })['href']
 		else:
 			href = "-"
 		theFile.write(href + '\n')
@@ -138,11 +141,14 @@ def scrape_wimdu(filename, soup, append=False):
 		theFile.write(rating + '\n')
 
 		### 5. Price ###
-		price = (card.find("span", { "class": "price" }).getText())[1:]
-		price = re.search("[0-9]+",price)
+		price = None
+		if card.find("span", { "class": "price" }):
+			price = (card.find("span", { "class": "price" }).getText())[1:]
+			price = re.search("[0-9]+",price)
+
 		if price == None:
 			price = "-"
-		theFile.write("&pound; " + price.group(0) + '\n')
+		theFile.write("$ " + price.group(0) + '\n')
 
 		### 6. Details ###
 		#details = card.find('div', { "class":"offer__description"}).getText().strip()
@@ -196,28 +202,28 @@ def render():
 	
 	i = 1
 	for line in data1:
-			if line.strip() == "##### END LISTING #####":
-				card = card.replace("{{ details }}", details)
-				contents = contents + card
-			elif line.strip() == "##### LISTING #####":
-				card = open(listing).read()
+		if line.strip() == "##### END LISTING #####":
+			card = card.replace("{{ details }}", details)
+			contents = contents + card
+		elif line.strip() == "##### LISTING #####":
+			card = open(listing).read()
 
-				details = ""
-				i = 0
+			details = ""
+			i = 0
+		else:
+			if i == 1:
+				card = card.replace('{{ image }}', line)
+			elif i == 2:
+				card = card.replace('{{ title }}', line)
+			elif i == 3:
+				card = card.replace('{{ url }}', line)
+			elif i == 4:
+				card = card.replace('{{ rating }}', line)
+			elif i == 5:
+				card = card.replace('{{ price }}', line)
 			else:
-				if i == 1:
-					card = card.replace('{{ image }}', line)
-				elif i == 2:
-					card = card.replace('{{ title }}', line)
-				elif i == 3:
-					card = card.replace('{{ url }}', line)
-				elif i == 4:
-					card = card.replace('{{ rating }}', line)
-				elif i == 5:
-					card = card.replace('{{ price }}', line)
-				else:
-					details = details + line
-			i = i + 1
+				details = details + line
+		i = i + 1
 	
 	for line in data2:
 		if line.strip() == "##### END LISTING #####":
@@ -244,10 +250,14 @@ def render():
 		i = i + 1
 	
 	#Recommend Result
+	j = 0
 	for line in data3:
 		if line.strip() == "##### END LISTING #####":
 			card = card.replace("{{ details }}", details)
-			contents2 = contents2 + card
+			card = card.replace('class="card"', 'class="card rec"')
+			if j < 8:
+				contents2 = contents2 + card
+				j = j + 1
 		elif line.strip() == "##### LISTING #####":
 			card = open(listing).read()
 	
@@ -267,11 +277,16 @@ def render():
 			else:
 				details = details + line
 		i = i + 1
-		
+	
+	j = 0
 	for line in data4:
 		if line.strip() == "##### END LISTING #####":
 			card = card.replace("{{ details }}", details)
-			contents2 = contents2 + card
+			card = card.replace('class="card"', 'class="card rec"')
+
+			if j < 8:
+				contents2 = contents2 + card
+				j = j + 1
 		elif line.strip() == "##### LISTING #####":
 			card = open(listing).read()
 	
@@ -350,7 +365,7 @@ def start(location,guests,checkin,checkout,priceMin,priceMax, append=False):
 	if priceMax:
 		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
 
-	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
+	url_uk = "https://www.homeaway.com/search/" + uk_params
 
 	url_weather = "https://www.google.com/search?q=weather+" + urllib2.quote(location)
 	
@@ -408,7 +423,7 @@ def	scrape_recommendresult(state,guests,checkin,checkout,priceMin,priceMax, appe
 	if priceMax:
 		uk_params = uk_params + "/maxNightlyPrice/" + urllib2.quote(priceMax)
 
-	url_uk = "https://www.homeaway.co.uk/search/" + uk_params
+	url_uk = "https://www.homeaway.com/search/" + uk_params
 	
 	# scraped data files
 	data_airbnb = "airbnb_R.txt"
@@ -426,6 +441,9 @@ priceMax = ""
 
 #Recommend Result
 state = ""
+randomCities = ["San Francisco", "Sydney", "Tokyo", "Seoul", "New York", "Las Vegas", 
+				"Florida", "Germany", "Madrid", "Honolulu", "Kawaii", "London", 
+				"Amsterdam", "Dubai", "Istanbul", "Lima", "Los Angeles"]
 
 if REQUEST:
 	location = REQUEST['location'].strip()
@@ -448,21 +466,14 @@ if REQUEST:
 	#Recommend Result
 	if state:
 		scrape_recommendresult(state, guests, checkin, checkout, priceMin, priceMax)
-	elif priceMin or priceMax or guests or checkin or checkout:
-		#scrape_recommendresult('Paris', guests, checkin, checkout, priceMin, priceMax, False)
-		#scrape_recommendresult('San Jose', guests, checkin, checkout, priceMin, priceMax, True)
-		scrape_recommendresult('New York', guests, checkin, checkout, priceMin, priceMax, True)
-		#scrape_recommendresult('Tokyo', guests, checkin, checkout, priceMin, priceMax, True)
-		scrape_recommendresult('Sydney', guests, checkin, checkout, priceMin, priceMax, True)
+	else:
+		scrape_recommendresult(random.choice(randomCities), guests, checkin, checkout, priceMin, priceMax, False)
 		
 	if location:
 		start(location, guests, checkin, checkout, priceMin, priceMax)
 	elif priceMin or priceMax or guests or checkin or checkout:
-		#start('Paris', guests, checkin, checkout, priceMin, priceMax, False)
-		start('San Jose', guests, checkin, checkout, priceMin, priceMax, True)
-		#start('New York', guests, checkin, checkout, priceMin, priceMax, True)
-		#start('Tokyo', guests, checkin, checkout, priceMin, priceMax, True)
-		start('Sydney', guests, checkin, checkout, priceMin, priceMax, True)
+		start(random.choice(randomCities), guests, checkin, checkout, priceMin, priceMax, False)
+		
 else:
 	reset()
 

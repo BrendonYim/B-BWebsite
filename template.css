@@ -54,6 +54,7 @@ a:hover {
   text-align: center;
   position: relative;
 }
+
 .card > img,
 .card a > img {
   margin-right: auto;
@@ -135,6 +136,10 @@ a.card.active {
   text-align: center;
 }
 
+.card.rec {
+  width: 95%;
+}
+
 form {
   padding: 10px;
   border-bottom: 4px inset orange;
@@ -194,4 +199,12 @@ button:hover {
 button[disabled] {
   background-color: #ddd;
   color: orange;
+}
+
+.recContainer {
+  float: right; 
+  width: 22%; 
+  border-left: 2px solid #ccc; 
+  padding: 0 10px; 
+  background-color: #99CCFF;
 }

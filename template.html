@@ -50,22 +50,20 @@
   			</div>
 		</form>
 
-		<div class="listings">
-			{{ listings }}
+		<div class="listingContainer">
+			<div class="listings" style="width:75%; float: left;">
+				{{ listings }}
+			</div>
+
+			<div class="listings recContainer">
+				<h3>Popular Cities:</h3>
+					{{ recommend_result }}
+			</div>
 		</div>
+		
 	</div>
 
-	<!-- Recommend Result -->
-    <br>
-    <br>
-    <br>
-    <br>
-	<div class="listings">
-		<h2>*********************************************************************</h2>
-		<h2>*********************************************************************</h2>
-	<h2> Recommend Result</h2>
-		{{ recommend_result }}
-	</div>
+	
 	
 
 </body>
